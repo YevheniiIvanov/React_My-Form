@@ -1,7 +1,14 @@
 const Spinner = () => {
     
     return (
-        <div style={{margin: '0px auto', display: 'block', position: 'absolute', left: '50%', transform: 'translateX(-50%)', marginTop: '50px'}} role="status">
+        <div style={{
+            margin: '0px auto',
+            display: 'block', 
+            position: 'absolute', 
+            left: '50%', 
+            transform: 'translateX(-50%)', 
+            marginTop: '50px'}} 
+            role="status">
             <svg xmlns="http://www.w3.org/2000/svg" style={{margin: '0 auto', background: 'none', display: 'block'}} width="200px" height="200px" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
                 <g transform="translate(80,50)">
                 <g transform="rotate(0)">

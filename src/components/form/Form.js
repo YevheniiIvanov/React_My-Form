@@ -15,6 +15,11 @@ const MyForm = () => {
     const [vat, setVat] = useState('');
     const [netto, setNetto] = useState('');
 
+    const [messCounter, setMessageCounter] = useState(false);
+    const [messConfirm, setMessageConfirm] = useState(false)
+    const [messVat, setMessageVat] = useState(false)
+    const [messNetto, setMessageNetto] = useState(false)
+
     const calcBrutto = () => {
         if(vat && netto){
             const brutto = netto + netto / 100 * vat;
@@ -35,50 +40,73 @@ const MyForm = () => {
             brutto: calcBrutto()
         };
 
-        request('https://jsonplaceholder.typicode.com/posts', "POST", JSON.stringify(newForm))
+        if(counter !== '' && confirmation !== '' && vat !== '' && netto !== '') {
+            request('https://jsonplaceholder.typicode.com/posts', "POST", JSON.stringify(newForm))
+        }else{
+            counter === '' ? setMessageCounter(true) : setMessageCounter(false);
+            confirmation === '' ? setMessageConfirm(true) : setMessageConfirm(false);
+            vat === '' ? setMessageVat(true) : setMessageVat(false);
+            netto === '' ? setMessageNetto(true) : setMessageNetto(false);
+        }        
     }
 
     const onRenderForm = () => {
         return(
-            <form onSubmit={onSubmitForm}>
-                <div className="modal__title">Description:</div>
-                <textarea required 
+            <form onSubmit={onSubmitForm} required>
+                <label className="modal__title">Description:</label>
+                <textarea 
+                    name="description"
                     type='text'
                     placeholder="Description"
                     maxLength={255} 
                     className="modal__form-description"
                     value={counter}
-                    onChange= {(e) => setCounter(e.target.value)}></textarea>
-                <div className="modal__subtitle">{counter.length < 255 ? `You can enter ${255-counter.length} symbols` : "You can't enter more than 255 characters"}</div>
+                    onChange= {(e) => setCounter(e.target.value)}>
+                </textarea>
+
+                <div className="modal__subtitle">{counter.length < 255 ? `You can enter ${255-counter.length} symbols` : "You can't enter more than 255 characters"} {messCounter === true ? <div style={{color: 'red', fontSize: '10px'}}>Text is required</div> : null}
+                </div>
 
                 <div className="modal__wrapper">
                     <div onChange={(e) => setConfirmation(e.target.value)}>
                         <div className="modal__title">Send confirmation:</div>            
-                        <input type="radio" required name="confirmation" value='Yes' />
-                        <label>Yes</label>
-                        <input type="radio" required name="confirmation" value="No"/>
-                        <label>No</label>
+                        <input type="radio" id="confirmyes"  name="confirmation" value="Yes"/>
+                        <label htmlFor="confirmyes">Yes</label>
+                        <input type="radio" id="confirmNo"  name="confirmation" value="No"/>
+                        <label htmlFor="confirmNo">No</label>
+                        <br/>{messConfirm === true ? <div style={{color: 'red', fontSize: '10px'}}>Text is required</div> : null}
                     </div>
 
-                    <div >
-                        <div className="modal__title">VAT</div>
-                        <select required placeholder="“Choose VAT" onChange={(e) => setVat(+e.target.value)}>
+                    <div>
+                        <label className="modal__title">VAT</label>
+                        <select placeholder="“Choose VAT" onChange={(e) => setVat(+e.target.value)}>
                             <option value=''>Choose VAT</option>
                             <option value='19'>19%</option>
                             <option value='21'>21%</option>
                             <option value='23'>23%</option>
                             <option value='25'>25%</option>
                         </select>
+                        <br/>{messVat === true ? <label style={{color: 'red', fontSize: '10px'}}>Text is required</label> : null}
                     </div>
                     
                     <div >
-                        <div className="modal__title">Price netto EUR</div>
-                        <input type="number" step="any" min='0' required disabled={vat === '' ? 'disabled' : null} onChange={(e) => setNetto(+e.target.value)}/>
+                        <label className="modal__title">Price netto EUR</label>
+                        <input 
+                            name="netto" 
+                            type="text" 
+                            pattern="^[0-9]*[.,]?[0-9]+$"
+                            disabled={vat === '' ? 'disabled' : null} 
+                            onChange={(e) => setNetto(+e.target.value.replace(/,/g, '.'))}/>
+                            <br/>{messNetto === true ? <label style={{color: 'red', fontSize: '10px'}}>Please, input number</label> : null}
                     </div>
-
+                    
                     <div>
-                        <div className="modal__title">Price brutto EUR</div>
-                        <input type='text' value={calcBrutto()} readOnly disabled></input>
+                        <label className="modal__title">Price brutto EUR</label>
+                        <input 
+                            name="brutto" 
+                            type='text' 
+                            value={calcBrutto()} 
+                            readOnly></input>
                     </div>
                 </div>
                 <button className="modal__btn" type="submit">Submit</button>    
